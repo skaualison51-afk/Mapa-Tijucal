@@ -90,4 +90,47 @@ function osmToGeoJSON(osmData) {
       };
     }
   }).filter(f => f !== undefined);
-  return { typ
+  return { type: "FeatureCollection", features: features };
+}
+
+// Botões
+function marcarFeita() {
+  if (selecionado) {
+    selecionado.setStyle({color:"green", weight:4});
+    selecionado.options.status="feita";
+  } else {
+    alert("Selecione uma rua do Tijucal primeiro.");
+  }
+}
+
+function marcarFazer() {
+  if (selecionado) {
+    selecionado.setStyle({color:"red", weight:3});
+    selecionado.options.status="fazer";
+  } else {
+    alert("Selecione uma rua do Tijucal primeiro.");
+  }
+}
+
+function limparSelecao() {
+  if (selecionado) {
+    selecionado.setStyle({weight:3});
+    selecionado = null;
+  }
+}
+
+function salvarProgresso() {
+  var progresso = {};
+  ruasLayer.eachLayer(function(layer){
+    var chave = layer.feature.properties.name || layer.feature.properties.id;
+    progresso[chave] = layer.options.status || "fazer";
+  });
+  localStorage.setItem("ruasFeitas", JSON.stringify(progresso));
+  alert("Progresso salvo!");
+}
+
+// Barra de busca restrita ao bairro Tijucal
+L.Control.geocoder({
+  defaultMarkGeocode: true,
+  bounds: tijucalBounds
+}).addTo(map);
